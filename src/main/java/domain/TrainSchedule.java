@@ -63,7 +63,7 @@ public class TrainSchedule {
             Booking newBooking = new Booking(customerEmail, tickets,startStation,endStation);
             bookings.add(newBooking);
         } else {
-            throw new IllegalArgumentException("Not enogh seates available ");
+            throw new IllegalArgumentException("Not enough seats");
         }
     }
 
