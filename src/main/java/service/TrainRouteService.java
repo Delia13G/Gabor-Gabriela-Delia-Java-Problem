@@ -46,6 +46,17 @@ public class TrainRouteService {
         System.out.println("Success: Route " + id + "has been removed ");
     }
 
-    
 
+    public void removeStopFromRoute(String routeIdToModify, String stopToRemove) {
+        domain.Route route = routeRepository.findById(routeIdToModify);
+        if(route == null){
+            System.out.println("Error route not found");
+        }
+        boolean  removed = route.getStops().removeIf(stop -> stop.getStationName().equalsIgnoreCase(stopToRemove));
+        if(removed){
+            routeRepository.update(route);
+        }else{
+            System.out.println("Error station not found");
+        }
+    }
 }

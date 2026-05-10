@@ -118,15 +118,7 @@ public class TrainScheduleService {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
+    public TrainSchedule getSchedule(String schedId) {
+        return scheduleRepository.findById(schedId);
+    }
 }
