@@ -1,8 +1,8 @@
 package domain;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TrainSchedule {
     private String id;
@@ -10,7 +10,7 @@ public class TrainSchedule {
     private Route route;
     private LocalDateTime departureDate;
     private boolean isDelayed;
-    private Map<String, Integer> bookings;
+    private List<Booking> bookings;
 
     public TrainSchedule(String id, Train train, Route route, LocalDateTime departureDate, boolean isDelayed) {
         this.id = id;
@@ -18,20 +18,53 @@ public class TrainSchedule {
         this.route = route;
         this.departureDate = departureDate;
         this.isDelayed = isDelayed;
-        this.bookings = new HashMap<>();
+        this.bookings = new ArrayList<>();
     }
 
-    public int getTotalBookedSeats(){
-        return bookings.values().stream().mapToInt(Integer::intValue).sum();
+    private int getStationIndex(String stationName){
+        List<RouteStop> stops = route.getStops();
+        for(int i = 0; i < stops.size(); i++){
+            if(stops.get(i).getStationName().equalsIgnoreCase(stationName)){
+                return i;
+            }
+        }
+        return -1;
     }
 
-    public boolean hasAvailableSeats(int requestedSeats){
-        return (getTotalBookedSeats() + requestedSeats) <= train.getTotalCapacity();
+
+
+    public boolean hasAvalableSeats(String startStation, String endStation,int requestedSeats){
+        List<RouteStop> stops = route.getStops();
+        int startIndex = getStationIndex(startStation);
+        int endIndex = getStationIndex(endStation);
+
+        if(startIndex == -1 || endIndex == -1 || startIndex >= endIndex){
+            return false;
+        }
+
+        for(int i = startIndex; i < endIndex; i++){
+            int currentlyBookedForThisSegment = 0;
+            for(Booking booking : bookings){
+                int bookingStart = getStationIndex(booking.getStartStation());
+                int bookingEnd = getStationIndex(booking.getEndStation());
+                if(bookingStart <= i && bookingEnd > i){
+                    currentlyBookedForThisSegment += booking.getNumberOfTickets();
+                }
+            }
+            if(currentlyBookedForThisSegment + requestedSeats > train.getTotalCapacity()){
+                return false;
+            }
+        }
+        return true;
     }
 
-    public void addBooking (String customerEmail, int tickets){
-        bookings.put(customerEmail,bookings.getOrDefault(customerEmail,0) + tickets);
-
+    public void addBooking(String customerEmail, int tickets, String startStation,String endStation){
+        if(hasAvalableSeats(startStation,endStation,tickets)){
+            Booking newBooking = new Booking(customerEmail, tickets,startStation,endStation);
+            bookings.add(newBooking);
+        } else {
+            throw new IllegalArgumentException("Not enogh seates available ");
+        }
     }
 
     public Train getTrain() {
@@ -74,11 +107,11 @@ public class TrainSchedule {
         isDelayed = delayed;
     }
 
-    public Map<String, Integer> getBookings() {
+    public List<Booking> getBookings() {
         return bookings;
     }
 
-    public void setBookings(Map<String, Integer> bookings) {
+    public void setBookings(List<Booking> bookings) {
         this.bookings = bookings;
     }
 
