@@ -31,7 +31,7 @@ Input:
    End Station: `Sibiu`
    Number of Tickets: `2`
 Output:
-   `--- MOCK EMAIL ---`
+   `MOCK EMAIL`
    `To: test@mail.com`
    `Subject: Booking Confirmation`
    `Message: You have successfully booked 2 tickets from Cluj to Sibiu.`
@@ -65,7 +65,7 @@ Output:
 Input:
    Schedule ID: `SCH-1`
 Output: (System automatically loops through bookings and emails customers)
-   `--- MOCK EMAIL ---`
+   `MOCK EMAIL`
    `To: test@mail.com`
    `Subject: URGENT: Train Delayed`
    `Message: We are sorry to inform you that your train from Cluj to Sibiu has been delayed.`
